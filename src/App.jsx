@@ -189,7 +189,7 @@ function App() {
               <form
                 onSubmit={handleStart}
                 action=""
-                className="flex overflow-hidden  flex-col lg:items-center items-end md:items-center lg:flex-col md:flex-col gap-2 "
+                className="flex overflow-hidden  flex-col  items-center lg:items-center items-end md:items-center lg:flex-col md:flex-col gap-2 "
               >
                 <div className="type flex items-center gap-2 md:flex-row lg:flex-row">
                   <label
