@@ -4,33 +4,42 @@ import "./App.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import englishLearningQuestions from "./components/interviewQuestions ";
-import { AiFillCheckSquare, AiFillCloseSquare } from "react-icons/ai";
+import {
+  AiFillCheckCircle,
+  AiFillCloseCircle,
+  AiFillPlayCircle,
+} from "react-icons/ai";
 function App() {
   const [next, setNext] = useState(null);
-  const [startLimt, setStartLimt] = useState(0);
-  const [endLimt, setEndLimit] = useState(0);
+  const [startLimt, setStartLimt] = useState(null);
+  const [endLimt, setEndLimit] = useState(null);
   const [Level, setLevel] = useState("");
   const [score, setScore] = useState(0);
   const [bgColor, setBgColor] = useState([]);
   const [correctAns, setCorrectAns] = useState([]);
-  const InterviewQuestion = englishLearningQuestions.slice(startLimt, endLimt);
-  const InterviewQuestionType = InterviewQuestion.filter(
-    (item) => item.level == Level
-  );
-  console.log(InterviewQuestion);
-  console.log(InterviewQuestionType);
+  const [InterviewQuestionType, setInterviewQuestionType] = useState([]);
+
+  const configureFunction = (start = 0, end = 5, level = "easy", data) => {
+    const InterviewQuestion = data
+      .slice(start, end)
+      .filter((item) => item.level == level);
+    setInterviewQuestionType(InterviewQuestion);
+  };
+
   const handleStartAgain = () => {
     setNext(null),
       setBgColor([]),
       setCorrectAns([]),
       setScore(0),
-      setEndLimit(0),
-      setStartLimt(0);
+      setEndLimit(null),
+      setStartLimt(null);
     setLevel("easy");
+    setInterviewQuestionType([]);
   };
-  const handleStart = () => {
-    if (Level == "") {
-      toast(`Set question type!`, {
+  const handleStart = (e) => {
+    e.preventDefault();
+    if (startLimt === null) {
+      toast(`Set start value!`, {
         position: "top-center",
         autoClose: 1000,
         hideProgressBar: false,
@@ -40,8 +49,8 @@ function App() {
         progress: undefined,
         theme: "light",
       });
-    } else if (endLimt == 0) {
-      toast(`Incriase End limit!`, {
+    } else if (endLimt == null) {
+      toast(`Set end value!`, {
         position: "top-center",
         autoClose: 1000,
         hideProgressBar: false,
@@ -51,8 +60,8 @@ function App() {
         progress: undefined,
         theme: "light",
       });
-    } else if (startLimt == null) {
-      toast(`set start limit!`, {
+    } else if (Level == "") {
+      toast(`Set quastion type!`, {
         position: "top-center",
         autoClose: 1000,
         hideProgressBar: false,
@@ -63,6 +72,7 @@ function App() {
         theme: "light",
       });
     } else {
+      configureFunction(startLimt, endLimt, Level, englishLearningQuestions);
       setNext(0);
     }
   };
@@ -73,65 +83,28 @@ function App() {
     setNext(next - 1);
   };
   const handleNext = () => {
-    if (next != InterviewQuestion.length) {
+    if (next != InterviewQuestionType.length) {
       if (!bgColor.some((item) => item.Q == next)) {
         return false;
       } else {
         setNext((prev) => prev + 1);
       }
     } else {
-      setNext(InterviewQuestion.length);
+      setNext(InterviewQuestionType.length);
     }
   };
   //
   const handleEndlemet = (e) => {
-    if (
-      e.target.value > InterviewQuestion.length ||
-      e.target.value < startLimt ||
-      e.target.value < InterviewQuestionType.length
-    ) {
-      setEndLimit(0);
-    } else {
-      setEndLimit(e.target.value);
-    }
-
-    if (e.target.value < startLimt) {
-      toast(`Please increase Max value!for batter result`, {
-        position: "top-center",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      setEndLimit(0);
-    } else {
-      setEndLimit(e.target.value);
-    }
-    if (
-      e.target.value <= 0 ||
-      e.target.value == "undefiend" ||
-      e.target.value == "null" ||
-      e.target.value == "NaN"
-    ) {
-      setEndLimit(5);
-    }
+    e.preventDefault();
+    setEndLimit(e.target.value);
   };
   const handleStartLemit = (e) => {
-    if (
-      e.target.value <= 0 ||
-      e.target.value == "undefiend" ||
-      e.target.value == "null" ||
-      e.target.value == "NaN"
-    ) {
-      setStartLimt(0);
-    }
+    e.preventDefault();
+    setStartLimt(e.target.value);
   };
   const handleSelect = (e, item, index) => {
     e.preventDefault();
-    let isScore = item == InterviewQuestion[next].answer;
+    let isScore = item == InterviewQuestionType[next].answer;
 
     if (bgColor.some((item) => item.Q == next)) {
       return false;
@@ -165,10 +138,10 @@ function App() {
   const handleType = (e) => {
     setLevel(e.target.value);
   };
-  useEffect(() => {}, [score, next, endLimt, startLimt, Level]);
+  useEffect(() => {}, [InterviewQuestionType]);
   return (
     <>
-      <div className="container-fluid bg-gradient-to-b from-sky-400 to-sky-700 flex justify-center items-center w-screen h-auto pb-96 pt-32">
+      <div className="container-fluid bg-gradient-to-b from-sky-100 to-sky-600 flex justify-center items-center w-screen h-auto pb-96 pt-32">
         <ToastContainer
           position="top-right"
           autoClose={5000}
@@ -189,12 +162,13 @@ function App() {
           </h1>
 
           {next === null ? (
-            <div className="col w-[300px] md:w-[500px] lg:w-[700px] px-5 rounded-xl h-[auto] py-20 lg:py-40 gap-10 flex items-center lg:items- flex-col lg:flex-col bg-gradient-to-b from-purple-100 to-white ">
+            <div className="col w-[300px] md:w-[500px] lg:w-[700px] px-5 rounded-xl h-[auto] py-20 lg:py-40 gap-10 flex items-center flex-col lg:flex-col bg-gradient-to-b from-purple-100 to-white  ">
               <form
+                onSubmit={handleStart}
                 action=""
-                className="flex overflow-hidden  flex-col lg:items-end items-end md:items-center lg:flex-col md:flex-col gap-2 "
+                className="flex overflow-hidden  flex-col lg:items-center items-end md:items-center lg:flex-col md:flex-col gap-2 "
               >
-                <div className="type flex   items-center gap-2 md:flex-row lg:flex-row">
+                <div className="type flex items-center gap-2 md:flex-row lg:flex-row">
                   <label
                     htmlFor=""
                     className="text-sm text-center lg:text-lg font-bold   text-purple-500 mx-1"
@@ -213,35 +187,37 @@ function App() {
                     <option value="medium">Medium</option>
                   </select>
                 </div>
-                <div className="endLimt flex md:justify-center  items-end gap-2 md:flex-row lg:flex-row">
+                <div className="endLimt flex md:justify-center  items-end lg:items-center gap-2 md:flex-row lg:flex-row">
                   <label
                     htmlFor=""
                     className="text-sm text-center lg:text-lg  md:text-sm font-bold text-purple-500 mx-1"
                   >
-                    How many question:
+                    Quantity:
                   </label>
-                  <input
-                    onChange={handleEndlemet}
-                    type="text"
-                    className="w-12 text-black px-1 focus:outline-none"
-                    placeholder="end"
-                  />{" "}
                   <input
                     onChange={handleStartLemit}
                     type="text"
                     className="w-12 text-black px-1 focus:outline-none"
                     placeholder="start"
-                  />{" "}
-                  {InterviewQuestionType.length}/
-                  {englishLearningQuestions.length}
+                  />
+                  <input
+                    onChange={handleEndlemet}
+                    type="text"
+                    className="w-12 text-black px-1 focus:outline-none"
+                    placeholder="end"
+                  />
+
+                  <span className="text-lg font-bold">
+                    {endLimt - startLimt}/{englishLearningQuestions.length}
+                  </span>
                 </div>
+                <button
+                  type="submit"
+                  className="w-[180px] mt-12 py-2 px-4 lg:w-[210px] lg:py-4 rounded-full text-white text-xl font-extrabold bg-purple-600"
+                >
+                  Start Now
+                </button>
               </form>
-              <button
-                onClick={handleStart}
-                className="w-[50%] py-4 rounded-full text-white text-xl font-extrabold bg-purple-400"
-              >
-                Start Now
-              </button>
             </div>
           ) : (
             <div className="col w-[400px] md:w-[500px] lg:w-[700px] px-5 rounded-xl h-[auto] flex justify-center bg-gradient-to-b from-purple-100 to-white">
@@ -278,10 +254,9 @@ function App() {
                           </span>
 
                           <span>
-                            {" "}
                             <span className="text-purple-500 font-bold">
                               Ans.
-                            </span>{" "}
+                            </span>
                             {item.Ans}
                           </span>
                         </p>
@@ -302,13 +277,13 @@ function App() {
                   <div className="card-header w-ful my-5">
                     <div className="flex justify-between  my-3 border-b-2 border-b-purple-300 pb-2  rounded-lg px-3 py-3 w-full items-center">
                       <div className="score flex overflow-hidden flex-col justify-center md:items-start lg:flex-row md:flex-col ">
-                        <h5 className="text-sm md:text-md lg:text-lg text-purple-200 font-bold">
+                        <h5 className="text-sm md:text-md lg:text-lg text-purple-500 font-bold">
                           Score:
                           <span className="text-black mx-2">{score}</span>
                         </h5>
-                        <h5 className="text-sm md:text-sm  text-purple-200 lg:text-lg font-bold">
+                        <h5 className="text-sm md:text-sm  text-purple-500 lg:text-lg font-bold ">
                           Anwsered:
-                          <span className="text-gray-900">
+                          <span className="text-gray-900 mx-2">
                             {next}/{InterviewQuestionType.length}
                           </span>
                         </h5>
@@ -365,15 +340,17 @@ function App() {
                                     InterviewQuestionType[next].answer
                                 ) ? (
                                   <span className="w-5 h-5">
-                                    <AiFillCheckSquare className="" />
+                                    <AiFillCheckCircle className="" />
                                   </span>
                                 ) : (
                                   <span className="w-5 h-5">
-                                    <AiFillCloseSquare />
+                                    <AiFillCloseCircle />
                                   </span>
                                 )
                               ) : (
-                                <></>
+                                <>
+                                  <AiFillPlayCircle className="text-purple-500 mx-4" />
+                                </>
                               )}
                               {item}
                             </button>
