@@ -25,7 +25,7 @@ function App() {
       .filter((item) => item.level == level);
     setInterviewQuestionType(InterviewQuestion);
     if (InterviewQuestion.length <= 0) {
-      toast(`No ${Level} question`, {
+      toast(`No ${Level} type question`, {
         position: "top-center",
         autoClose: 1000,
         hideProgressBar: false,
@@ -36,7 +36,7 @@ function App() {
         theme: "light",
       });
     } else {
-      toast(`${InterviewQuestion.length} ${Level} question`, {
+      toast(`${InterviewQuestion.length} ${Level} type question`, {
         position: "top-center",
         autoClose: 1000,
         hideProgressBar: false,
@@ -321,7 +321,7 @@ function App() {
                       </div>
                     </div>
                     {InterviewQuestionType.length > 0 && (
-                      <h1 className="text-md lg:text-lg w-full font-bold text-purple-700 mt-10  flex gap-2">
+                      <h1 className="text-md lg:text-lg select-none w-full font-bold text-purple-700 mt-10  flex gap-2">
                         <span className="px-3">{next + 1}.</span>
                         <span>{InterviewQuestionType[next]?.question}</span>
                       </h1>
