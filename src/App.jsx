@@ -24,6 +24,29 @@ function App() {
       .slice(start, end)
       .filter((item) => item.level == level);
     setInterviewQuestionType(InterviewQuestion);
+    if (InterviewQuestion.length <= 0) {
+      toast(`No ${Level} question`, {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      toast(`${InterviewQuestion.length} ${Level} question`, {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
   };
 
   const handleStartAgain = () => {
